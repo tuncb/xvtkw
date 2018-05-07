@@ -12,7 +12,7 @@ namespace xvtkw {
 
   namespace detail {
 
-    std::string get_dataset_names(const std::unordered_map<std::string, DataSet>& ds, xvtkw::DataSetAttribute attr)
+    inline std::string get_dataset_names(const std::unordered_map<std::string, DataSet>& ds, xvtkw::DataSetAttribute attr)
     {
       std::string names;
       for (auto&& pair : ds) {
@@ -26,7 +26,7 @@ namespace xvtkw {
       return names;
     }
 
-    void set_dataset_attributes(const std::unordered_map<std::string, DataSet>& ds, rapidxml::xml_document<>& doc, rapidxml::xml_node<char>* node)
+    inline void set_dataset_attributes(const std::unordered_map<std::string, DataSet>& ds, rapidxml::xml_document<>& doc, rapidxml::xml_node<char>* node)
     {
       auto set_attr = [&ds, &doc, &node](xvtkw::DataSetAttribute attr) {
         auto names = get_dataset_names(ds, attr);

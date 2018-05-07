@@ -6,7 +6,7 @@
 
 namespace xvtkw { namespace detail {
 
-  rapidxml::xml_node<>* append_root(const std::string& type, ByteOrder order, rapidxml::xml_document<>& doc) {
+  inline rapidxml::xml_node<>* append_root(const std::string& type, ByteOrder order, rapidxml::xml_document<>& doc) {
     rapidxml::xml_node<>* root_node = doc.allocate_node(rapidxml::node_element, "VTKFile");
     root_node->append_attribute(doc.allocate_attribute("type", doc.allocate_string(type.c_str())));
     root_node->append_attribute(doc.allocate_attribute("version", "1.0"));
@@ -15,7 +15,7 @@ namespace xvtkw { namespace detail {
     return root_node;
   }
 
-  void write_xml_dataset(rapidxml::xml_node<>* root_node, const std::string& name, const xvtkw::DataSet& dataset)
+  inline void write_xml_dataset(rapidxml::xml_node<>* root_node, const std::string& name, const xvtkw::DataSet& dataset)
   {
     auto& doc = *(root_node->document());
 

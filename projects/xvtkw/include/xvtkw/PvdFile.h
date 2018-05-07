@@ -22,7 +22,7 @@ struct PvdFile {
   std::vector<PvdItem> collection;
 };
 
-void to_file(const PvdFile& pvd, const std::string& filename)
+inline void to_file(const PvdFile& pvd, const std::string& filename)
 {
   rapidxml::xml_document<> doc;
 

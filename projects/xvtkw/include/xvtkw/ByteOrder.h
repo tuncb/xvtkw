@@ -11,7 +11,7 @@ namespace xvtkw {
 
 namespace std {
 
-  std::string to_string(const xvtkw::ByteOrder& order)
+  inline std::string to_string(const xvtkw::ByteOrder& order)
   {
     if (order == xvtkw::ByteOrder::LittleEndian) {
       return "BigEndian";

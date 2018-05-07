@@ -16,7 +16,7 @@ namespace xvtkw {
 
 namespace std {
 
-  string to_string(::xvtkw::VtuType type)
+  inline string to_string(::xvtkw::VtuType type)
   {
     switch (type)
     {

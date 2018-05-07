@@ -2,7 +2,7 @@ from conans import ConanFile
 
 class XVTKWConan(ConanFile):
     name = "xvtkw"
-    version = "2.1.0"
+    version = "2.1.1"
     license = "https://www.apache.org/licenses/LICENSE-2.0"
     url = "https://github.com/tuncb/timetable"
     description = ("A library to write vtk and pvd files")

@@ -44,7 +44,7 @@ namespace xvtkw {
 }
 
 namespace std {
-  std::string to_string(const xvtkw::DataSetAttribute& attr)
+  inline std::string to_string(const xvtkw::DataSetAttribute& attr)
   {
     switch (attr) 
     {
