@@ -2,7 +2,6 @@
 #include <vector>
 #include <string>
 #include <xvtkw/VtuType.h>
-#include <stringconversion/Fundamentals.h>
 
 namespace xvtkw {
 
@@ -24,12 +23,12 @@ namespace xvtkw {
 
     template <typename Iter> void add_to_data(Iter b, Iter e) {
       for (auto iter = b; iter != e; ++iter) {
-        data += stringconversion::to_string(*iter) + " ";
+        data += std::to_string(*iter) + " ";
       }
     }
 
     template <typename T> void add_to_data(T t) {
-      data += stringconversion::to_string(t) + " ";
+      data += std::to_string(t) + " ";
     }
     template <typename T> void add_to_data(std::initializer_list<T> list) {
       this->add_to_data(std::begin(list), std::end(list));
