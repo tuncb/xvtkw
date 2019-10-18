@@ -3,7 +3,6 @@
 #include <vector>
 #include <unordered_map>
 #include <sstream>
-#include <stringconversion/Fundamentals.h>
 #include <xvtkw/InternalUtilities.h>
 #include <xvtkw/VtuType.h>
 #include <xvtkw/DataSet.h>
@@ -148,8 +147,8 @@ namespace xvtkw {
     // Piece node
     rapidxml::xml_node<>* piece_node = doc.allocate_node(rapidxml::node_element, "Piece");
     root_node->first_node("UnstructuredGrid")->append_node(piece_node);
-    piece_node->append_attribute(doc.allocate_attribute("NumberOfPoints", doc.allocate_string(stringconversion::to_string(vtu.points.size()).c_str())));
-    piece_node->append_attribute(doc.allocate_attribute("NumberOfCells", doc.allocate_string(stringconversion::to_string(vtu.cells.size()).c_str())));
+    piece_node->append_attribute(doc.allocate_attribute("NumberOfPoints", doc.allocate_string(std::to_string(vtu.points.size()).c_str())));
+    piece_node->append_attribute(doc.allocate_attribute("NumberOfCells", doc.allocate_string(std::to_string(vtu.cells.size()).c_str())));
 
     // write point data
     rapidxml::xml_node<>* points_node = doc.allocate_node(rapidxml::node_element, "Points");

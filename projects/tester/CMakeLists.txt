@@ -1,14 +1,11 @@
 PROJECT(xvtkw_tester)
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 
-include(../../conan.cmake)
-conan_cmake_run(CONANFILE conanfile.py BASIC_SETUP CMAKE_TARGETS)
-
-set(SOURCES 
+set(SOURCES
   "./source/main.cpp"
   "./source/vtu_pvd_file_tester.cpp"
 )
-set(XVTKW_LIB 
+set(XVTKW_LIB
   ../xvtkw/include/xvtkw/byteorder.h
   ../xvtkw/include/xvtkw/ByteOrder.h
   ../xvtkw/include/xvtkw/DataSet.h
@@ -22,7 +19,7 @@ set(XVTKW_LIB
 
 add_executable(xvtkw_tester ${SOURCES} ${XVTKW_LIB})
 target_include_directories(xvtkw_tester PRIVATE "../xvtkw/include/")
-conan_target_link_libraries(xvtkw_tester)
+target_include_directories(xvtkw_tester PRIVATE "./external/")
 
 source_group("xvtkw_library" FILES ${XVTKW_LIB})
 

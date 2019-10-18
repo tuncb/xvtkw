@@ -2,7 +2,6 @@
 #include <vector>
 #include <fstream>
 #include <rapidxml\rapidxml_print.hpp>
-#include <stringconversion/Fundamentals.h>
 #include <xvtkw\ByteOrder.h>
 
 namespace xvtkw {
@@ -33,8 +32,8 @@ inline void to_file(const PvdFile& pvd, const std::string& filename)
 
   for (auto&& item : pvd.collection) {
     auto node = doc.allocate_node(rapidxml::node_element, "DataSet");
-    node->append_attribute(doc.allocate_attribute("timestep", doc.allocate_string(stringconversion::to_string(item.timestep).c_str())));
-    node->append_attribute(doc.allocate_attribute("part", doc.allocate_string(stringconversion::to_string(item.part).c_str())));
+    node->append_attribute(doc.allocate_attribute("timestep", doc.allocate_string(std::to_string(item.timestep).c_str())));
+    node->append_attribute(doc.allocate_attribute("part", doc.allocate_string(std::to_string(item.part).c_str())));
     node->append_attribute(doc.allocate_attribute("file", item.filename.c_str()));
     collection_node->append_node(node);
   }

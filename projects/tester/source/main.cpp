@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE XvtkwTestModule
-#include <boost/test/unit_test.hpp>
+#define CATCH_CONFIG_MAIN 
+#include <catch/catch.hpp>
 
 
 

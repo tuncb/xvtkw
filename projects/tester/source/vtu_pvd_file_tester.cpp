@@ -1,10 +1,8 @@
-#include <boost/test/unit_test.hpp>
+#include <catch/catch.hpp>
 #include <xvtkw\VtuFile.h>
 #include <xvtkw\PvdFile.h>
 
-BOOST_AUTO_TEST_SUITE(vtu_file)
-
-BOOST_AUTO_TEST_CASE(vtu_file_test_case) 
+TEST_CASE("vtu_file_test_case", "[vtu]")
 {
   xvtkw::VtuFile<float> vtu1(xvtkw::ByteOrder::LittleEndian);
   xvtkw::VtuFile<float> vtu2(xvtkw::ByteOrder::LittleEndian);
@@ -94,5 +92,3 @@ BOOST_AUTO_TEST_CASE(vtu_file_test_case)
 //  vtu.write("d:\\temp\\test_double.vtu");
 //
 //}
-
-BOOST_AUTO_TEST_SUITE_END()

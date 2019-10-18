@@ -1,6 +1,5 @@
 #pragma once
 #include <rapidxml/rapidxml_print.hpp>
-#include <stringconversion/Fundamentals.h>
 #include "ByteOrder.h"
 #include <xvtkw/DataSet.h>
 
@@ -24,7 +23,7 @@ namespace xvtkw { namespace detail {
     datanode->append_attribute(doc.allocate_attribute("Name", doc.allocate_string(name.c_str(), name.size()), 4, name.size()));
     datanode->append_attribute(doc.allocate_attribute("type", doc.allocate_string(std::to_string(dataset.type).c_str()), 4, 0));
     datanode->append_attribute(doc.allocate_attribute("format", doc.allocate_string("ascii", 5), 6, 5));
-    datanode->append_attribute(doc.allocate_attribute("NumberOfComponents", doc.allocate_string(stringconversion::to_string(dataset.num_components).c_str()), 18, 0));
+    datanode->append_attribute(doc.allocate_attribute("NumberOfComponents", doc.allocate_string(std::to_string(dataset.num_components).c_str()), 18, 0));
 
     char* str = doc.allocate_string(dataset.data.c_str(), dataset.data.size());
     datanode->append_node(doc.allocate_node(rapidxml::node_data, "", str, 0, dataset.data.size()));
