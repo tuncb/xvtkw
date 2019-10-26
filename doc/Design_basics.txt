@@ -1,0 +1,13 @@
+--DataArray
+type
+Name
+NumberofComponents
+format: ascii | binary | appended
+Optional:offset => only makes sense with appended format
+
+--Cells
+connectivity: DataArray<Int32>
+offsets: DataArray<Int32>
+types:DataArray<UInt8>
+--Points
+Coordinates: DataArray

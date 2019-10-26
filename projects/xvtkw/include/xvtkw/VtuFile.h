@@ -30,7 +30,7 @@ namespace xvtkw {
       auto set_attr = [&ds, &doc, &node](xvtkw::DataSetAttribute attr) {
         auto names = get_dataset_names(ds, attr);
         if (!names.empty()) {
-          auto attr_name = std::to_string(attr);
+          auto attr_name = to_string(attr);
           node->append_attribute(doc.allocate_attribute(doc.allocate_string(attr_name.c_str()), doc.allocate_string(names.c_str())));
         }
       };
@@ -42,15 +42,6 @@ namespace xvtkw {
       set_attr(DataSetAttribute::Vectors);
     }
   }
-
-
-  template <typename T> struct Point {
-    Point(T a_x, T a_y, T a_z) : x(a_x), y(a_y), z(a_z) {}
-    T x;
-    T y;
-    T z;
-  };
-
 
   enum class VtuCellType : int {
     VTK_EMPTY_CELL = 0,
@@ -116,81 +107,71 @@ namespace xvtkw {
     VTK_HIGHER_ORDER_HEXAHEDRON = 67,
   };
 
-  struct Cell {
-    Cell(VtuCellType cell_type, std::initializer_list<int> list) : type(cell_type), point_positions(list) {}
-    Cell(VtuCellType cell_type, std::vector<int>& vec) : type(cell_type), point_positions(vec) {}
-    template <typename Iter> 
-    Cell(VtuCellType cell_type, Iter b, Iter e) : type(cell_type), point_positions(b, e) {}
-
-    VtuCellType type;
-    std::vector<int> point_positions;
-  };
-
-  template <typename T> struct VtuFile
+  rapidxml::xml_node<>* addNode(rapidxml::xml_document<>& doc, rapidxml::xml_node<>* parent, rapidxml::node_type type, const char* name)
   {
-    explicit VtuFile(xvtkw::ByteOrder _byte_order) : byte_order(_byte_order) {}
-    std::vector<Point<T>> points;
-    std::vector<Cell> cells;
-    std::unordered_map<std::string, DataSet> point_datasets;
-    std::unordered_map<std::string, DataSet> cell_datasets;
-    xvtkw::ByteOrder byte_order;
-  };
+    auto node = doc.allocate_node(type, name);
+    parent->append_node(node);
+    return node;
+  }
 
-  template <typename T> void to_file(const VtuFile<T>& vtu, const std::string& filename)
+  template <typename IterType> void to_file(const IterType piecesBeg,  const IterType  piecesEnd, const std::string& filename)
   {
     rapidxml::xml_document<> doc;
     // root node
     auto&& root_node = detail::append_root("UnstructuredGrid", vtu.byte_order, doc);
     // Unstructured Grid node
-    auto&& us_grid = doc.allocate_node(rapidxml::node_element, "UnstructuredGrid");
-    root_node->append_node(us_grid);
+    auto&& us_grid = addNode(doc, root_node, rapidxml::node_element, "UnstructuredGrid");
     // Piece node
-    rapidxml::xml_node<>* piece_node = doc.allocate_node(rapidxml::node_element, "Piece");
-    root_node->first_node("UnstructuredGrid")->append_node(piece_node);
-    piece_node->append_attribute(doc.allocate_attribute("NumberOfPoints", doc.allocate_string(std::to_string(vtu.points.size()).c_str())));
-    piece_node->append_attribute(doc.allocate_attribute("NumberOfCells", doc.allocate_string(std::to_string(vtu.cells.size()).c_str())));
+    std::for_each(piecesBeg, piecesEnd, [](const auto& piece) {  
+      auto piece_node = addNode(doc, us_grid, rapidxml::node_element, "Piece");
+      piece_node->append_attribute(doc.allocate_attribute("NumberOfPoints", doc.allocate_string(std::to_string(piece.nrPoints).c_str())));
+      piece_node->append_attribute(doc.allocate_attribute("NumberOfCells", doc.allocate_string(std::to_string(piece.nr_cells).c_str())));
 
-    // write point data
-    rapidxml::xml_node<>* points_node = doc.allocate_node(rapidxml::node_element, "Points");
-    piece_node->append_node(points_node);
-    DataSet points(type_to_vtk_type<T>(), 3, DataSetAttribute::None);
-    for (auto&& point : vtu.points) {
-      points.add_to_data(point.x);
-      points.add_to_data(point.y);
-      points.add_to_data(point.z);
-    }
-    xvtkw::detail::write_xml_dataset(points_node, "", points);
-    //write cell data
-    rapidxml::xml_node<>* cell_node = doc.allocate_node(rapidxml::node_element, "Cells");
-    piece_node->append_node(cell_node);
-    DataSet cell_connectivity(VtuType::Int32, 1, DataSetAttribute::None);
-    DataSet cell_offsets(VtuType::Int32, 1, DataSetAttribute::None);
-    DataSet cell_types(VtuType::UInt8, 1, DataSetAttribute::None);
-    int offset = 0;
-    for (auto&& cell : vtu.cells) {
-      cell_types.add_to_data((int)cell.type);
-      for (auto point_pos : cell.point_positions) cell_connectivity.add_to_data(point_pos);
-      offset += cell.point_positions.size();
-      cell_offsets.add_to_data(offset);
-    }
-    xvtkw::detail::write_xml_dataset(cell_node, "connectivity", cell_connectivity);
-    xvtkw::detail::write_xml_dataset(cell_node, "offsets", cell_offsets);
-    xvtkw::detail::write_xml_dataset(cell_node, "types", cell_types);
+      // write point data
+      rapidxml::xml_node<>* points_node = doc.allocate_node(rapidxml::node_element, "Points");
+      piece_node->append_node(points_node);
+      DataSet points(type_to_vtk_type<T>(), 3, DataSetAttribute::None);
+      for (auto&& point : vtu.points) {
+        points.add_to_data(point.x);
+        points.add_to_data(point.y);
+        points.add_to_data(point.z);
+      }
+      xvtkw::detail::write_xml_dataset(points_node, "", points);
+      //write cell data
+      rapidxml::xml_node<>* cell_node = doc.allocate_node(rapidxml::node_element, "Cells");
+      piece_node->append_node(cell_node);
+      DataSet cell_connectivity(VtuType::Int32, 1, DataSetAttribute::None);
+      DataSet cell_offsets(VtuType::Int32, 1, DataSetAttribute::None);
+      DataSet cell_types(VtuType::UInt8, 1, DataSetAttribute::None);
+      int offset = 0;
+      for (auto&& cell : vtu.cells) {
+        cell_types.add_to_data((int)cell.type);
+        for (auto point_pos : cell.point_positions) cell_connectivity.add_to_data(point_pos);
+        offset += cell.point_positions.size();
+        cell_offsets.add_to_data(offset);
+      }
+      xvtkw::detail::write_xml_dataset(cell_node, "connectivity", cell_connectivity);
+      xvtkw::detail::write_xml_dataset(cell_node, "offsets", cell_offsets);
+      xvtkw::detail::write_xml_dataset(cell_node, "types", cell_types);
 
-    // write point datasets
-    auto p_node = doc.allocate_node(rapidxml::node_element, "PointData");
-    detail::set_dataset_attributes(vtu.point_datasets, doc, p_node);
-    piece_node->append_node(p_node);
-    for(auto&& pair : vtu.point_datasets) {
-      xvtkw::detail::write_xml_dataset(p_node,pair.first, pair.second);
-    }
-    // write cell datasets
-    auto c_node = doc.allocate_node(rapidxml::node_element, "CellData");
-    detail::set_dataset_attributes(vtu.cell_datasets, doc, c_node);
-    piece_node->append_node(c_node);
-    for (auto&& pair : vtu.cell_datasets) {
-      xvtkw::detail::write_xml_dataset(c_node, pair.first, pair.second);
-    }
+      // write point datasets
+      auto p_node = doc.allocate_node(rapidxml::node_element, "PointData");
+      detail::set_dataset_attributes(vtu.point_datasets, doc, p_node);
+      piece_node->append_node(p_node);
+      for (auto&& pair : vtu.point_datasets) {
+        xvtkw::detail::write_xml_dataset(p_node, pair.first, pair.second);
+      }
+      // write cell datasets
+      auto c_node = doc.allocate_node(rapidxml::node_element, "CellData");
+      detail::set_dataset_attributes(vtu.cell_datasets, doc, c_node);
+      piece_node->append_node(c_node);
+      for (auto&& pair : vtu.cell_datasets) {
+        xvtkw::detail::write_xml_dataset(c_node, pair.first, pair.second);
+      }
+
+
+    });
+
 
     std::ofstream file;
     file.open(filename.c_str(), std::ios::trunc | std::ios::out);

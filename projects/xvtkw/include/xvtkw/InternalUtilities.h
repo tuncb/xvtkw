@@ -14,6 +14,20 @@ namespace xvtkw { namespace detail {
     return root_node;
   }
 
+  struct StringWrapper
+  {
+    const char* data;
+    size_t size;
+  };
+
+  struct StringWrapperExtractor
+  {
+    StringWrapper operator()(const std::string& str) { return { str.data(),  std::size(str) }; };
+    StringWrapper operator()(const tcb::span<char>& str) { return { str.data(),  std::size(str) }; };
+  };
+
+  template <typename T> StringWrapper extract(const T& str) { return { str.data(),  std::size(str) }; }
+
   inline void write_xml_dataset(rapidxml::xml_node<>* root_node, const std::string& name, const xvtkw::DataSet& dataset)
   {
     auto& doc = *(root_node->document());
@@ -25,8 +39,9 @@ namespace xvtkw { namespace detail {
     datanode->append_attribute(doc.allocate_attribute("format", doc.allocate_string("ascii", 5), 6, 5));
     datanode->append_attribute(doc.allocate_attribute("NumberOfComponents", doc.allocate_string(std::to_string(dataset.num_components).c_str()), 18, 0));
 
-    char* str = doc.allocate_string(dataset.data.c_str(), dataset.data.size());
-    datanode->append_node(doc.allocate_node(rapidxml::node_data, "", str, 0, dataset.data.size()));
+    auto strWrapper = std::visit(StringWrapperExtractor(),  dataset.data);
+    //char* str = doc.allocate_string(dataset.data.data(), dataset.data.size());
+    datanode->append_node(doc.allocate_node(rapidxml::node_data, "", strWrapper.data, 0, strWrapper.size));
   }
 
 } }

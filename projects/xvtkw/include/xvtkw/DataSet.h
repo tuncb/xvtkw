@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 #include <xvtkw/VtuType.h>
+#include <tcb/span.hpp>
+#include <variant>
 
 namespace xvtkw {
 
@@ -10,42 +12,9 @@ namespace xvtkw {
     None, Scalars, Vectors, Normals, Tensors, TCoords
   };
 
-  struct DataSet {
-    DataSet() : type(VtuType::None), num_components(0),attribute(DataSetAttribute::None) {}
-    DataSet(VtuType a_type, int a_num_componenets, DataSetAttribute attr)
-      : type(a_type), num_components(a_num_componenets), attribute(attr) {}
-
-    template <typename Iter> DataSet(VtuType a_type, int a_num_componenets, DataSetAttribute attr, Iter b, Iter e)
-      : type(a_type), num_components(a_num_componenets), attribute(attr)
-    {
-      add_to_data(b, e);
-    }
-
-    template <typename Iter> void add_to_data(Iter b, Iter e) {
-      for (auto iter = b; iter != e; ++iter) {
-        data += std::to_string(*iter) + " ";
-      }
-    }
-
-    template <typename T> void add_to_data(T t) {
-      data += std::to_string(t) + " ";
-    }
-    template <typename T> void add_to_data(std::initializer_list<T> list) {
-      this->add_to_data(std::begin(list), std::end(list));
-    }
-
-    VtuType type;
-    int num_components;
-    std::string data;
-    DataSetAttribute attribute;
-  };
-
-}
-
-namespace std {
   inline std::string to_string(const xvtkw::DataSetAttribute& attr)
   {
-    switch (attr) 
+    switch (attr)
     {
     case xvtkw::DataSetAttribute::None:
       return "";
@@ -64,5 +33,22 @@ namespace std {
       break;
     }
   }
-}
+  
+  struct DataSet {
+    VtuType type;
+    DataSetAttribute attribute;
+    int num_components;
+    std::variant<std::string, tcb::span<char>> data;
+  };
 
+  template <typename T> tcb::span<char> CreateBinaryWrapper(T* data, size_t size)
+  {
+    return { static_cast<char>(data), size };
+  }
+
+  template <typename Iter> std::string CreateText(Iter b, Iter e) 
+  {
+    return "";
+  }
+
+}

@@ -8,15 +8,13 @@ namespace xvtkw {
 
 struct PvdItem
 {
-  PvdItem(float a_timestep, int a_part, std::string a_filename) : timestep(a_timestep), part(a_part), filename(std::move(a_filename)) {}
-  float timestep;
-  int part;
   std::string filename;
+  int part;
+  float timestep;
 };
 
 
 struct PvdFile {
-  PvdFile(xvtkw::ByteOrder _byte_order) : byte_order(_byte_order) {}
   xvtkw::ByteOrder byte_order;
   std::vector<PvdItem> collection;
 };

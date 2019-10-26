@@ -4,54 +4,63 @@
 
 TEST_CASE("vtu_file_test_case", "[vtu]")
 {
-  xvtkw::VtuFile<float> vtu1(xvtkw::ByteOrder::LittleEndian);
-  xvtkw::VtuFile<float> vtu2(xvtkw::ByteOrder::LittleEndian);
-
-  vtu1.points.push_back(xvtkw::Point<float>(0.f, 0.f, 0.f));
-  vtu1.points.push_back(xvtkw::Point<float>(10.f, 0.f, 0.f));
-  vtu1.points.push_back(xvtkw::Point<float>(10.f, 10.f, 0.f));
-
-  vtu1.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 0, 1 }));
-  vtu1.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 1, 2 }));
-
-  vtu2.points.push_back(xvtkw::Point<float>(0.f, 0.f, 0.f));
-  vtu2.points.push_back(xvtkw::Point<float>(0.f, 10.f, 0.f));
-  vtu2.points.push_back(xvtkw::Point<float>(10.f, 10.f, 0.f));
+  std::vector<float> point_coordinates { 0.f, 0.f, 0.f, 10.f, 0.f, 0.f, 10.f, 10.f, 0.f };
+   
+  xvtkw::VtuModel<float> vtu{
+    xvtkw::DataSet{}
   
-  vtu2.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 0, 1 }));
-  vtu2.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 1, 2 }));
+  };
 
-  xvtkw::DataSet cell_partitions_1(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
-  cell_partitions_1.add_to_data({ 1, 1 });
-  vtu1.cell_datasets["Partition"] = std::move(cell_partitions_1);
 
-  xvtkw::DataSet cell_partitions_1b(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
-  cell_partitions_1b.add_to_data({ 1, 1 });
-  vtu1.cell_datasets["Partitionb"] = std::move(cell_partitions_1b);
-  
-  xvtkw::DataSet cell_partitions_2(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
-  cell_partitions_2.add_to_data({ 2, 2 });
-  vtu2.cell_datasets["Partition"] = std::move(cell_partitions_2);
 
-  xvtkw::DataSet cell_partitions_2b(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
-  cell_partitions_2b.add_to_data({ 2, 2 });
-  vtu2.cell_datasets["Partitionb"] = std::move(cell_partitions_2b);
+  //xvtkw::VtuModel<float> vtu1(xvtkw::ByteOrder::LittleEndian);
+  //xvtkw::VtuModel<float> vtu2(xvtkw::ByteOrder::LittleEndian);
 
-  xvtkw::DataSet point_displacements_1(xvtkw::VtuType::Float64, 3, xvtkw::DataSetAttribute::Vectors);
-  point_displacements_1.add_to_data<double>({ 0, 0, 0, 0.5, 0, 0, 0.5, 0, 0 });
-  vtu1.point_datasets["Displacements"] = std::move(point_displacements_1);
-  
-  xvtkw::DataSet point_displacements_2(xvtkw::VtuType::Float64, 3, xvtkw::DataSetAttribute::Vectors);
-  point_displacements_2.add_to_data<double>({ 0, 0, 0, 0, 0, 0, 0.5, 0, 0 });
-  vtu2.point_datasets["Displacements"] = std::move(point_displacements_2);
+  //vtu1.points.push_back(xvtkw::Point<float>(0.f, 0.f, 0.f));
+  //vtu1.points.push_back(xvtkw::Point<float>(10.f, 0.f, 0.f));
+  //vtu1.points.push_back(xvtkw::Point<float>(10.f, 10.f, 0.f));
 
-  xvtkw::to_file(vtu1, "d:\\temp\\vtu1.vtu");
-  xvtkw::to_file(vtu2, "d:\\temp\\vtu2.vtu");
+  //vtu1.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 0, 1 }));
+  //vtu1.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 1, 2 }));
 
-  xvtkw::PvdFile pvd(xvtkw::ByteOrder::LittleEndian);
-  pvd.collection.push_back(xvtkw::PvdItem(0, 0, "d:\\temp\\vtu1.vtu"));
-  pvd.collection.push_back(xvtkw::PvdItem(0, 1, "d:\\temp\\vtu2.vtu"));
-  xvtkw::to_file(pvd, "d:\\temp\\vtu.pvd");
+  //vtu2.points.push_back(xvtkw::Point<float>(0.f, 0.f, 0.f));
+  //vtu2.points.push_back(xvtkw::Point<float>(0.f, 10.f, 0.f));
+  //vtu2.points.push_back(xvtkw::Point<float>(10.f, 10.f, 0.f));
+  //
+  //vtu2.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 0, 1 }));
+  //vtu2.cells.push_back(xvtkw::Cell(xvtkw::VtuCellType::VTK_LINE, { 1, 2 }));
+
+  //xvtkw::DataSet cell_partitions_1(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
+  //cell_partitions_1.add_to_data({ 1, 1 });
+  //vtu1.cell_datasets["Partition"] = std::move(cell_partitions_1);
+
+  //xvtkw::DataSet cell_partitions_1b(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
+  //cell_partitions_1b.add_to_data({ 1, 1 });
+  //vtu1.cell_datasets["Partitionb"] = std::move(cell_partitions_1b);
+  //
+  //xvtkw::DataSet cell_partitions_2(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
+  //cell_partitions_2.add_to_data({ 2, 2 });
+  //vtu2.cell_datasets["Partition"] = std::move(cell_partitions_2);
+
+  //xvtkw::DataSet cell_partitions_2b(xvtkw::VtuType::Int32, 1, xvtkw::DataSetAttribute::Scalars);
+  //cell_partitions_2b.add_to_data({ 2, 2 });
+  //vtu2.cell_datasets["Partitionb"] = std::move(cell_partitions_2b);
+
+  //xvtkw::DataSet point_displacements_1(xvtkw::VtuType::Float64, 3, xvtkw::DataSetAttribute::Vectors);
+  //point_displacements_1.add_to_data<double>({ 0, 0, 0, 0.5, 0, 0, 0.5, 0, 0 });
+  //vtu1.point_datasets["Displacements"] = std::move(point_displacements_1);
+  //
+  //xvtkw::DataSet point_displacements_2(xvtkw::VtuType::Float64, 3, xvtkw::DataSetAttribute::Vectors);
+  //point_displacements_2.add_to_data<double>({ 0, 0, 0, 0, 0, 0, 0.5, 0, 0 });
+  //vtu2.point_datasets["Displacements"] = std::move(point_displacements_2);
+
+  //xvtkw::to_file(vtu1, "d:\\temp\\vtu1.vtu");
+  //xvtkw::to_file(vtu2, "d:\\temp\\vtu2.vtu");
+
+  //xvtkw::PvdFile pvd(xvtkw::ByteOrder::LittleEndian);
+  //pvd.collection.push_back(xvtkw::PvdItem(0, 0, "d:\\temp\\vtu1.vtu"));
+  //pvd.collection.push_back(xvtkw::PvdItem(0, 1, "d:\\temp\\vtu2.vtu"));
+  //xvtkw::to_file(pvd, "d:\\temp\\vtu.pvd");
 }
 
 

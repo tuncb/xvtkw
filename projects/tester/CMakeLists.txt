@@ -21,5 +21,7 @@ add_executable(xvtkw_tester ${SOURCES} ${XVTKW_LIB})
 target_include_directories(xvtkw_tester PRIVATE "../xvtkw/include/")
 target_include_directories(xvtkw_tester PRIVATE "./external/")
 
+target_compile_options(xvtkw_tester PRIVATE "/std:c++latest")
+
 source_group("xvtkw_library" FILES ${XVTKW_LIB})
 
